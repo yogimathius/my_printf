@@ -3,10 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
+#include <stdint.h>
 
 int is_null_terminated(const char *str) {
   return (strchr(str, '\0') != NULL);
 }
+
 void reverse(char *str, int len) {
   int i, j;
   for (i = 0, j = len - 1; i < j; i++, j--) {
@@ -56,6 +59,35 @@ char *itoa(int value, char *str, int base) {
 
   return str;
 }
+char *pitoa(uintptr_t value, char *str, int base) {
+  // check for valid base
+  if (base < 2 || base > 36) {
+    *str = '\0';
+    return str;
+  }
+
+  // handle zero case
+  if (value == 0) {
+    str[0] = '0';
+    str[1] = '\0';
+    return str;
+  }
+
+  // convert digits to string in reverse order
+  int i = 0;
+  while (value != 0) {
+    int rem = value % base;
+    str[i++] = (rem > 9) ? (rem - 10 + 'a') : (rem + '0');
+    value /= base;
+  }
+
+  // add null terminator and reverse the string
+  str[i] = '\0';
+  reverse(str, i);
+
+  return str;
+}
+
 
 int write_char(char c) { return (write(1, &c, 1)); }
 
@@ -114,16 +146,44 @@ int my_printf(const char *format, ...) {
         count += len;
         break;
         }
-    case 'u': {/* unsigned decimal */
-        int u = va_arg(args, unsigned int);
-        char buffer[20];
-        itoa(u, buffer, 10);
-        int len = strlen(buffer);
-        write(1, buffer, len);
-        count += len;
-        break;
-    }
+        case 'u': {/* unsigned decimal */
+            int u = va_arg(args, unsigned int);
+            char buffer[20];
+            itoa(u, buffer, 10);
+            int len = strlen(buffer);
+            write(1, buffer, len);
+            count += len;
+            break;
+        }
+        case 'x': {/* unsigned decimal */
+            int u = va_arg(args, unsigned int);
+            char buffer[20];
+            itoa(u, buffer, 16); /* Use base 16 */
+            int len = strlen(buffer);
+                /* Convert string to uppercase */
+            for (int i = 0; i < len; i++) {
+                buffer[i] = toupper(buffer[i]);
+            }
+            write(1, buffer, len);
+            count += len;
+            break;
+        }
+        case 'p': {/* pointer */
+            void* p = va_arg(args, void*);
+            uintptr_t p_as_int = (uintptr_t)p;
+            char buffer[20];
+            pitoa(p_as_int, buffer, 16);
+            int len = strlen(buffer);
 
+            /* Prefix with "0x" to indicate memory address */
+            char output[22] = "0x";
+            strncpy(output+2, buffer, len);
+            output[len+2] = '\0';
+
+            write(1, output, len+2);
+            count += len+2;
+            break;
+        }
       }
     }
     i++;
