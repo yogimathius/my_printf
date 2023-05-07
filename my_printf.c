@@ -23,6 +23,13 @@ char *itoa(int value, char *str, int base) {
     return str;
   }
 
+  // handle zero case
+  if (value == 0) {
+    str[0] = '0';
+    str[1] = '\0';
+    return str;
+  }
+  
   // handle negative values
   int is_negative = 0;
   if (value < 0) {
@@ -98,6 +105,25 @@ int my_printf(const char *format, ...) {
         write(1, &c, sizeof(char));
         count++;
         break;
+      case 'o':{ /* octal */
+        int u = va_arg(args, unsigned int);
+        char buffer[20];
+        itoa(u, buffer, 8);
+        int len = strlen(buffer);
+        write(1, buffer, len);
+        count += len;
+        break;
+        }
+    case 'u': {/* unsigned decimal */
+        int u = va_arg(args, unsigned int);
+        char buffer[20];
+        itoa(u, buffer, 10);
+        int len = strlen(buffer);
+        write(1, buffer, len);
+        count += len;
+        break;
+    }
+
       }
     }
     i++;
