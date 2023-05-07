@@ -70,6 +70,12 @@ int my_printf(const char *format, ...) {
       switch (format[i]) {
       case 's': /* string */
         s = va_arg(args, char *);
+        if (s == NULL) {
+          int len = strlen("(null)");
+          write(1, "(null)", len);
+            count+=len;
+            break;
+        }
         if (is_null_terminated(s)) {
             int len = strlen(s);
 
