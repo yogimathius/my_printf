@@ -2,19 +2,16 @@
 ***
 
 ## Task
-TODO - What is the problem? And where is the challenge?
+Create a Printf function that checks for types %s, %d, %c, %o, %u, %x, and %p
 
 ## Description
-TODO - How have you solved the problem?
+I used the va_args program to extract the arguments 
 
 ## Installation
-TODO - How to install your project? npm install? make? make re?
+N/A
 
 ## Usage
-TODO - How does it work?
-```
-./my_project argument1 argument2
-```
+Run Gandalf to ensure tests all passing with flying colors!
 
 ### The Core Team
 
